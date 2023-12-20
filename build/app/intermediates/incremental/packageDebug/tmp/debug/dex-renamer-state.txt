@@ -1,0 +1,4 @@
+#Wed Dec 20 19:04:23 WIB 2023
+base.0=C\:\\Users\\VAREL\\AndroidStudioProjects\\praktikum_hive\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
