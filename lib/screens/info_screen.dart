@@ -1,27 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import
-'package:contoh_hive/screens/update_screen.dart';
+import 'package:contoh_hive/model/person.dart';
+import 'package:contoh_hive/screens/update_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import
-'package:contoh_hive/screens/add_screen.dart';
+import 'package:contoh_hive/utils/add_person_form.dart';
+import 'package:contoh_hive/utils/update_person_form.dart';
+
 class InfoScreen extends StatefulWidget {
   @override
-  _InfoScreenState createState() =>
-      _InfoScreenState();
+  _InfoScreenState createState() => _InfoScreenState();
 }
-class _InfoScreenState extends
-State<InfoScreen> {
+
+class _InfoScreenState extends State<InfoScreen> {
   late final Box contactBox;
-// Delete info from people box
-  _deleteInfo(int index) {
-    contactBox.deleteAt(index);
-    print('Item deleted from box at index:$index');
-    }
+
+  _deleteInfo(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this student?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('NO'),
+            ),
+            TextButton(
+              onPressed: () {
+                contactBox.deleteAt(index);
+                Navigator.of(context).pop();
+                print('Item deleted from box at index:$index');
+              },
+              child: Text('YES'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _showAddDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        return AlertDialog(
+          title: Text('Create Student'),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          content: Container(
+            width: screenWidth * 1.0,
+            height: 200.0,
+            child: AddPersonForm(),
+          ),
+        );
+      },
+    );
+  }
+
+  _showEditDialog(BuildContext context, int index, Person personData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        return AlertDialog(
+          title: Text('Edit Student Information'),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          content: Container(
+            width: screenWidth * 1.0,
+            height: 340.0,
+            child: UpdatePersonForm(index: index, person: personData),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-// Get reference to an already opened box
     contactBox = Hive.box('peopleBox');
   }
 
@@ -32,13 +91,9 @@ State<InfoScreen> {
         title: Text('Students List'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AddScreen(),
-              ),
-            ),
-        child: Icon(Icons.add),
+        onPressed: () => _showAddDialog(context),
+        child: Icon(Icons.person_add),
+        backgroundColor: Colors.pink, // Set the background color to pink
       ),
       body: ValueListenableBuilder(
         valueListenable: contactBox.listenable(),
@@ -49,77 +104,96 @@ State<InfoScreen> {
             );
           } else {
             return ListView.builder(
-              itemCount: box.length,
+              itemCount: box.length + 1, // +1 for the header
               itemBuilder: (context, index) {
-                var currentBox = box;
-                var personData =
-                currentBox.getAt(index)!;
+                if (index == 0) {
+                  // Header
+                  return _buildHeader(box.length);
+                } else {
+                  // List item
+                  var currentBox = box;
+                  var personData = currentBox.getAt(index - 1)!;
 
-                return InkWell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UpdateScreen(
-                        index: index,
-                        person: personData,
+                  return InkWell(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => UpdateScreen(
+                          index: index - 1,
+                          person: personData,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Text(personData.name),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('NIM: ${personData.country}'),
-                            Text('Phone: ${personData.phoneNumber ?? "N/A"}'),
-                            Text('Email: ${personData.email ?? "N/A"}'),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: () => _deleteInfo(index),
-                              icon: Icon(
-                                Icons.delete,
-                                color: Colors.red,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            personData.name,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'NIM: ${personData.country}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                            ),
-                            SizedBox(width: 8), // Add some space between buttons
-                            IconButton(
-                              onPressed: () {
-                                // Handle edit button press (navigate to the edit screen)
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => UpdateScreen(
-                                      index: index,
-                                      person: personData,
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.blue,
+                              Text(
+                                'Email: ${personData.email ?? "N/A"}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'Phone: ${personData.phoneNumber ?? "N/A"}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                onPressed: () => _showEditDialog(context, index - 1, personData),
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => _deleteInfo(context, index - 1),
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Divider(
-                        height: 15,
-                        color: Colors.blue,
-                      ),
-                    ],
-                  ),
-                );
+                        Divider(
+                          height: 15,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
 
-
+                  );
+                }
               },
             );
           }
         },
+      ),
+    );
+  }
+
+
+  Widget _buildHeader(int totalStudents) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Total Students: $totalStudents Total Subject: 0'),
+          // Add any other header information you need
+        ],
       ),
     );
   }

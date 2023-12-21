@@ -51,47 +51,87 @@ class _AddPersonFormState extends State<AddPersonForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Name'),
           TextFormField(
             controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'Name',
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+              isDense: true,
+            ),
             validator: _fieldValidator,
           ),
-          SizedBox(height: 24.0),
-          Text('NIM'),
           TextFormField(
             controller: _countryController,
+            decoration: InputDecoration(
+              labelText: 'NIM',
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+              isDense: true,
+            ),
             validator: _fieldValidator,
           ),
-          SizedBox(height: 24.0),
-          Text('Phone Number'),
           TextFormField(
             controller: _phoneNumberController,
-            keyboardType: TextInputType.number, // Set the keyboard type to number
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Phone Number',
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+              isDense: true,
+            ),
             validator: _fieldValidator,
           ),
-          SizedBox(height: 24.0),
-          Text('Email'),
           TextFormField(
             controller: _emailController,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+              isDense: true,
+            ),
             validator: _fieldValidator,
           ),
-          Spacer(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 24.0),
-            child: Container(
-              width: double.maxFinite,
-              height: 50,
-              child: ElevatedButton(
+          SizedBox(height: 8.0), // Add a small space between form fields and buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
                 onPressed: () {
                   if (_personFormKey.currentState!.validate()) {
                     _addInfo();
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text('Add'),
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(140, 30), // Adjust the width and height as needed
+                  backgroundColor: Colors.white60, // Set the background color to grey
+                ),
+                child: Text(
+                  'CREATE',
+                  style: TextStyle(
+                    color: Colors.black, // Set the text color to black
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                ),
               ),
-            ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cancel button action
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(140, 30), // Adjust the width and height as needed
+                  backgroundColor: Colors.white60, // Set the background color to grey
+                ),
+                child: Text(
+                  'CANCEL',
+                  style: TextStyle(
+                    color: Colors.black, // Set the text color to black
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                ),
+              ),
+            ],
           ),
+
+
+
         ],
       ),
     );

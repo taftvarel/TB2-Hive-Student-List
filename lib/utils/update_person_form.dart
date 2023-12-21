@@ -17,10 +17,10 @@ class UpdatePersonForm extends StatefulWidget {
 
 class _UpdatePersonFormState extends State<UpdatePersonForm> {
   final _personFormKey = GlobalKey<FormState>();
-  late final _nameController;
-  late final _countryController;
-  late final _phoneNumberController;
-  late final _emailController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _countryController;
+  late final TextEditingController _phoneNumberController;
+  late final TextEditingController _emailController;
 
   late final Box box;
 
@@ -50,7 +50,8 @@ class _UpdatePersonFormState extends State<UpdatePersonForm> {
     box = Hive.box('peopleBox');
     _nameController = TextEditingController(text: widget.person.name);
     _countryController = TextEditingController(text: widget.person.country);
-    _phoneNumberController = TextEditingController(text: widget.person.phoneNumber.toString());
+    _phoneNumberController =
+        TextEditingController(text: widget.person.phoneNumber.toString());
     _emailController = TextEditingController(text: widget.person.email);
   }
 
@@ -59,48 +60,75 @@ class _UpdatePersonFormState extends State<UpdatePersonForm> {
     return Form(
       key: _personFormKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Name'),
           TextFormField(
             controller: _nameController,
             validator: _fieldValidator,
+            decoration: InputDecoration(labelText: 'Name'),
           ),
-          SizedBox(height: 24.0),
-          Text('NIM'),
+          SizedBox(height: 12.0),
           TextFormField(
             controller: _countryController,
             validator: _fieldValidator,
+            decoration: InputDecoration(labelText: 'NIM'),
           ),
-          SizedBox(height: 24.0),
-          Text('Phone Number'),
+          SizedBox(height: 12.0),
           TextFormField(
             controller: _phoneNumberController,
             keyboardType: TextInputType.number,
             validator: _fieldValidator,
+            decoration: InputDecoration(labelText: 'Phone Number'),
           ),
-          SizedBox(height: 24.0),
-          Text('Email'),
+          SizedBox(height: 12.0),
           TextFormField(
             controller: _emailController,
             validator: _fieldValidator,
+            decoration: InputDecoration(labelText: 'Email'),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 24.0),
-            child: Container(
-              width: double.maxFinite,
-              height: 50,
-              child: ElevatedButton(
+          SizedBox(height: 16.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
                 onPressed: () {
                   if (_personFormKey.currentState!.validate()) {
                     _updateInfo();
                     Navigator.of(context).pop();
                   }
                 },
-                child: Text('Update'),
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(195, 30), // Adjust the width and height as needed
+                  backgroundColor: Colors.white60, // Set the background color to grey
+                ),
+                child: Text(
+                  'UPDATE',
+                  style: TextStyle(
+                    color: Colors.black, // Set the text color to black
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                ),
               ),
-            ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cancel button action
+                },
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(90, 30), // Adjust the width and height as needed
+                  backgroundColor: Colors.white60, // Set the background color to grey
+                ),
+                child: Text(
+                  'CANCEL',
+                  style: TextStyle(
+                    color: Colors.black, // Set the text color to black
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                ),
+              ),
+            ],
           ),
+
+
+
         ],
       ),
     );
